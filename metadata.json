@@ -1,0 +1,5 @@
+{
+  "name": "Cilindro Test Tracker",
+  "description": "Un'applicazione per tenere traccia dei cicli di un cilindro oleodinamico durante i test, registrando gli orari di inizio e di fine.",
+  "requestFramePermissions": []
+}
