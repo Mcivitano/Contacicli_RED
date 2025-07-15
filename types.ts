@@ -1,3 +1,4 @@
+import { Timestamp } from "firebase/firestore";
 
 export interface TestData {
   alesaggio: string;
@@ -11,7 +12,7 @@ export interface TestData {
 export interface TimeLogEntry {
   id: number;
   type: 'start' | 'stop';
-  timestamp: any; // Modificato per compatibilità con Firestore Timestamp
+  timestamp: any; // Lasciato any per flessibilità tra Date e Firestore Timestamps
 }
 
 export interface EditingState {
@@ -31,7 +32,8 @@ export interface ArchivedTest {
     id: string; // L'ID sarà una stringa da Firestore
     testCode: string;
     finalCycleCount: number;
-    completionDate: string;
+    completionDate: any; // Gestirà il Timestamp di Firestore
     data: TestData;
     timeLogs: TimeLogEntry[];
+    createdAt: Timestamp;
 }

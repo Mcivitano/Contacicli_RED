@@ -28,6 +28,7 @@ const getInitialState = (): CurrentTestState => ({
 
 // Funzione per convertire i Timestamp di Firestore in oggetti Date
 const convertFirestoreTimestamps = (logs: any[]): TimeLogEntry[] => {
+    if (!Array.isArray(logs)) return [];
     return logs.map(log => ({
         ...log,
         timestamp: log.timestamp?.toDate ? log.timestamp.toDate() : new Date(log.timestamp)
@@ -59,11 +60,18 @@ const App: React.FC = () => {
                 setDoc(currentTestRef, getInitialState());
             }
             setIsLoading(false);
+        }, (error) => {
+            console.error("Errore nello snapshot del test corrente:", error);
+            setIsLoading(false);
         });
 
         const unsubArchived = onSnapshot(archivedTestsRef, (snapshot) => {
             const tests = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as ArchivedTest));
+            // Ordina per data di creazione, la più recente prima
+            tests.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
             setArchivedTests(tests);
+        }, (error) => {
+            console.error("Errore nello snapshot dei test archiviati:", error);
         });
 
         return () => {
@@ -73,8 +81,12 @@ const App: React.FC = () => {
     }, []);
 
     const updateCurrentTestInDb = useCallback(async (newState: Partial<CurrentTestState>) => {
-        await setDoc(currentTestRef, { ...currentTest, ...newState }, { merge: true });
-    }, [currentTest, currentTestRef]);
+         try {
+            await setDoc(currentTestRef, newState, { merge: true });
+        } catch (error) {
+            console.error("Errore durante l'aggiornamento del test:", error);
+        }
+    }, [currentTestRef]);
     
     const calculateTotalCycles = useCallback(() => {
         const frequencyHz = parseFloat(currentTest.data.frequenza);
@@ -117,7 +129,7 @@ const App: React.FC = () => {
     }, [currentTest.isRunning, calculateTotalCycles]);
 
     useEffect(() => {
-        const code = Object.values(currentTest.data).filter(v => v.trim() !== '').join('-');
+        const code = Object.values(currentTest.data).filter(v => String(v).trim() !== '').join('-');
         if (code !== currentTest.testCode) {
             updateCurrentTestInDb({ testCode: code });
         }
@@ -139,9 +151,9 @@ const App: React.FC = () => {
         const newLog: TimeLogEntry = {
             id: Date.now(),
             type: newRunningState ? 'start' : 'stop',
-            timestamp: new Date(),
+            timestamp: serverTimestamp(),
         };
-        const newTimeLogs = [...currentTest.timeLogs, newLog].sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+        const newTimeLogs = [...currentTest.timeLogs, newLog];
         updateCurrentTestInDb({ isRunning: newRunningState, timeLogs: newTimeLogs });
     };
 
@@ -157,7 +169,7 @@ const App: React.FC = () => {
             const newTimestamp = new Date(editingState.tempValue);
             const newTimeLogs = currentTest.timeLogs.map((log, i) =>
                 i === index ? { ...log, timestamp: newTimestamp } : log
-            ).sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+            );
             updateCurrentTestInDb({ timeLogs: newTimeLogs });
             setEditingState(null);
         }
@@ -180,14 +192,14 @@ const App: React.FC = () => {
         const newArchivedTest = {
             testCode: currentTest.testCode,
             finalCycleCount: finalCycleCount,
-            completionDate: new Date().toLocaleString('it-IT'),
+            completionDate: serverTimestamp(),
             data: currentTest.data,
             timeLogs: currentTest.timeLogs,
-            createdAt: serverTimestamp() // per ordinamento
+            createdAt: serverTimestamp()
         };
         
         await addDoc(archivedTestsRef, newArchivedTest);
-        await updateCurrentTestInDb({ ...getInitialState(), isRunning: false });
+        await setDoc(currentTestRef, getInitialState());
         
         setIsArchiveModalOpen(false);
     };
@@ -209,7 +221,7 @@ const App: React.FC = () => {
                         <ConfigForm
                             testData={currentTest.data}
                             onDataChange={handleDataChange}
-                            isTestRunning={currentTest.isRunning}
+                            isTestRunning={currentTest.timeLogs.length > 0 && currentTest.isRunning}
                             initialCycleCount={currentTest.initialCycleCount}
                             onInitialCycleChange={handleInitialCycleChange}
                             testCode={currentTest.testCode}
