@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { TestData } from '../types';
+import { TestData } from './types';
 
 interface ConfigFormProps {
   testData: TestData;
@@ -22,6 +22,7 @@ const formFields: FormField[] = [
   { id: 'alesaggio', label: 'Alesaggio', unit: 'mm', type: 'number' },
   { id: 'stelo', label: 'Stelo', unit: 'mm', type: 'number' },
   { id: 'attacco', label: 'Attacco', type: 'text' },
+  { id: 'guarnizioni', label: 'Guarnizioni', type: 'text' },
   { id: 'corsa', label: 'Corsa', unit: 'mm', type: 'number' },
   { id: 'pressione', label: 'Pressione', unit: 'bar', type: 'number' },
   { id: 'frequenza', label: 'Frequenza', unit: 'Hz', type: 'number' },
