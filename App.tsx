@@ -2,17 +2,18 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { doc, onSnapshot, setDoc, collection, addDoc, serverTimestamp, deleteDoc } from 'firebase/firestore';
 import { db } from './firebase-config';
 import { CurrentTestState, ArchivedTest, TimeLogEntry, EditingState, TestData } from './types';
-import ConfigForm from './components/ConfigForm';
-import CycleCounter from './components/CycleCounter';
-import Controls from './components/Controls';
-import TimeLog from './components/TimeLog';
-import ArchiveModal from './components/ArchiveModal';
-import ArchivedTestsList from './components/ArchivedTestsList';
+import ConfigForm from './ConfigForm';
+import CycleCounter from './CycleCounter';
+import Controls from './Controls';
+import TimeLog from './TimeLog';
+import ArchiveModal from './ArchiveModal';
+import ArchivedTestsList from './ArchivedTestsList';
 
 const initialTestData: TestData = {
     alesaggio: '100',
     stelo: '50',
     attacco: 'ISO 6020-2',
+    guarnizioni: 'NBR',
     corsa: '500',
     pressione: '210',
     frequenza: '1',

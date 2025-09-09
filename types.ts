@@ -4,6 +4,7 @@ export interface TestData {
   alesaggio: string;
   stelo: string;
   attacco: string;
+  guarnizioni: string;
   corsa: string;
   pressione: string;
   frequenza: string;

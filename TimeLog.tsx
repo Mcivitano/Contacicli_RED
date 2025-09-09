@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { TimeLogEntry, EditingState } from '../types';
+import { TimeLogEntry, EditingState } from './types';
 import * as Icons from './icons';
 
 interface TimeLogProps {

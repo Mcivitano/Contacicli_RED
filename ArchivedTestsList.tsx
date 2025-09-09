@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArchivedTest } from '../types';
+import { ArchivedTest } from './types';
 import { ClockIcon, ExcelIcon } from './icons';
 import * as XLSX from 'xlsx';
 
@@ -24,6 +24,7 @@ const ArchivedTestItem: React.FC<{ test: ArchivedTest }> = ({ test }) => {
             ["Alesaggio (mm)", test.data.alesaggio],
             ["Stelo (mm)", test.data.stelo],
             ["Attacco", test.data.attacco],
+            ["Guarnizioni", test.data.guarnizioni],
             ["Corsa (mm)", test.data.corsa],
             ["Pressione (bar)", test.data.pressione],
             ["Frequenza (Hz)", test.data.frequenza],
@@ -76,6 +77,7 @@ const ArchivedTestItem: React.FC<{ test: ArchivedTest }> = ({ test }) => {
                         <li>Alesaggio: <span className="font-mono">{test.data.alesaggio} mm</span></li>
                         <li>Stelo: <span className="font-mono">{test.data.stelo} mm</span></li>
                         <li>Attacco: <span className="font-mono">{test.data.attacco}</span></li>
+                        <li>Guarnizioni: <span className="font-mono">{test.data.guarnizioni}</span></li>
                         <li>Corsa: <span className="font-mono">{test.data.corsa} mm</span></li>
                         <li>Pressione: <span className="font-mono">{test.data.pressione} bar</span></li>
                         <li>Frequenza: <span className="font-mono">{test.data.frequenza} Hz</span></li>
